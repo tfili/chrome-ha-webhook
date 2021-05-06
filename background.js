@@ -4,7 +4,7 @@ let currentRequest;
 let config;
 getConfig();
 
-chrome.webNavigation.onBeforeNavigate.addListener(handler);
+chrome.webNavigation.onCommitted.addListener(handler);
 
 function handler(details) {
     if (config === undefined || currentRequest !== undefined) {
