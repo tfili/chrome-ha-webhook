@@ -33,5 +33,8 @@ function getConfig() {
     xhr.onload = () => {
         config = JSON.parse(xhr.response);
     };
+    xhr.onerror = (e) => {
+        alert(e);
+    };
     xhr.send();
 }
