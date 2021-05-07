@@ -13,7 +13,7 @@ function handler(details) {
 
     const { webhook } = config;
     const { url } = details;
-    if (/https:\/\/meet.google.com\/.+/.test(url) || /https:\/\/us02web.zoom.us\/.+/.test(url)) {
+    if (/https:\/\/meet\.google\.com\/.+/.test(url) || /https:\/\/us02web\.zoom\.us\/.+/.test(url)) {
         currentRequest = new XMLHttpRequest();
         currentRequest.open(webhook.method, webhook.url);
         currentRequest.onload = () => {
