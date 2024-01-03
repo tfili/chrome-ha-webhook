@@ -1,40 +1,30 @@
 "use strict";
 
-let currentRequest;
+let running = false;
 let config;
-getConfig();
 
 chrome.webNavigation.onCommitted.addListener(handler);
 
-function handler(details) {
-    if (config === undefined || currentRequest !== undefined) {
+async function handler(details) {
+    const { url } = details;
+    if (running || !(/https:\/\/meet\.google\.com\/.+/.test(url) || /https:\/\/us02web\.zoom\.us\/.+/.test(url))) {
         return;
     }
 
-    const { webhook } = config;
-    const { url } = details;
-    if (/https:\/\/meet\.google\.com\/.+/.test(url) || /https:\/\/us02web\.zoom\.us\/.+/.test(url)) {
-        currentRequest = new XMLHttpRequest();
-        currentRequest.open(webhook.method, webhook.url);
-        currentRequest.onload = () => {
-            currentRequest = undefined;
-        };
-        currentRequest.onerror = (e) => {
-            alert(e);
-            currentRequest = undefined;
-        };
-        currentRequest.send();
+    running = true;
+    try {
+        const webhook = await getWebhook();
+        await fetch(webhook.url, { method: webhook.method });
+    } finally {
+        running = false;
     }
 }
 
-function getConfig() {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", chrome.extension.getURL('config.json'), true);
-    xhr.onload = () => {
-        config = JSON.parse(xhr.response);
-    };
-    xhr.onerror = (e) => {
-        alert(e);
-    };
-    xhr.send();
+async function getWebhook() {
+    if (config === undefined) {
+        const response = await fetch(chrome.runtime.getURL('config.json'));
+        config = await response.json();
+    }
+
+    return config.webhook;
 }

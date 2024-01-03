@@ -1,12 +1,13 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
   
     "name": "Chrome Home Assistant navigation webhook",
     "description": "",
     "version": "1.0",
   
     "background": {
-      "scripts": ["background.js"]
+      "service_worker": "background.js",
+      "type": "module"
     },
     "permissions": ["webNavigation"]
   }
